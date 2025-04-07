@@ -3,18 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile - Bookd</title>
+  <title>Create Account - Bookd</title>
   <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Princess+Sofia&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Gorditas&display=swap" rel="stylesheet">
 
 </head>
 <body>
-  <section id="profile" class="page">
-    <h1>My Profile</h1>
-    <p>Discover, review, and share your favorite books with the community.</p>
-  <div class="login-container">
+  <section id="create" class="page">
+ <h1>Create Your Account</h1>
+    <div class="login-container">
     <form id="loginForm">
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
@@ -30,7 +27,18 @@
     <li><a href="profile.html">Profile</a></li>
   </ul>
 </nav>
- <div id="profileContent"></div>
+<div class="create-container">
+<form id="createAccountForm">
+	<label for="myName">Username:</label>
+      <input type="text" style="margin-left: 58px;" id="newUsername" placeholder="Choose a Username" required><br><br>
+	<label for="myPassword">Password:</label>
+      <input type="password" style="margin-left: 60px;" id="newPassword" placeholder="Choose a Password" required><br><br>
+      <label for="myPassword">Confirm Password:</label>
+      <input type="password" id="confirmPassword" placeholder="Choose a Password" required><br><br>
+      <button type="submit" style= "margin-left: 200px;">Sign Up</button>
+    </form>
+</div>
+
 	<footer>
 		<p>&copy; 2025 Azizah Blair | Contact: ablair6@my.westga.edu</p>
 	</footer>
@@ -38,3 +46,4 @@
 
 </body>
 </html>
+
