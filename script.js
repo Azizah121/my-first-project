@@ -1,260 +1,347 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // === LOGIN FORM LOGIC ===
-  const loginForm = document.getElementById("loginForm");
+   // === LOGIN FORM LOGIC ===
+   const loginForm = document.getElementById("loginForm");
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
+   if (loginForm) {
+      loginForm.addEventListener("submit", function (event) {
+         event.preventDefault();
 
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+         const username = document.getElementById("username").value.trim();
+         const password = document.getElementById("password").value.trim();
 
-      const savedUsername = localStorage.getItem("savedUsername");
-      const savedPassword = localStorage.getItem("savedPassword");
+         const userData = JSON.parse(localStorage.getItem(`user_${username}`));
 
-      if (!username || !password) {
-        alert("Please enter both username and password.");
-        return;
-      }
+         if (!username || !password) {
+            alert("Please enter both username and password.");
+            return;
+         }
 
-      if (username === savedUsername && password === savedPassword) {
-        alert("Login successful!");
-        localStorage.setItem("loggedIn", "true"); // Store logged-in status
-        window.location.href = "profile.html"; // Redirect to profile page
-      } else {
-        alert("Login failed. Check your credentials or click OK to create an account.");
-        window.location.href = "create.html"; // Redirect to account creation page
-      }
-    });
-  }
+         if (userData && userData.password === password) {
+            alert("Login successful!");
+            localStorage.setItem("loggedInUser", username);
+            window.location.href = "profile.html";
+         } else {
+            alert("Login failed. Check your credentials or click OK to create an account.");
+            window.location.href = "create.html";
+         }
+      });
+   }
 
-  // === COLLAPSIBLE LOGIC ===
-  const collapsibleButtons = document.querySelectorAll(".collapsible-button");
+   const createAccountForm = document.getElementById("createAccountForm");
 
-  collapsibleButtons.forEach(button => {
-    button.addEventListener("click", function () {
-      const content = this.nextElementSibling;
-      // Toggle the active state of the button
-      this.classList.toggle("active");
-      
-      // Toggle the collapsible content visibility
-      if (content.style.display === "block") {
-        content.style.display = "none";
-      } else {
-        content.style.display = "block";
-      }
-    });
-  });
+   if (createAccountForm) {
+      createAccountForm.addEventListener("submit", function (event) {
+         event.preventDefault();
 
-  // === PROFILE PAGE LOGIC ===
-  const profileContent = document.getElementById("profileContent");
+         const newUsername = document.getElementById("newUsername").value.trim();
+         const newPassword = document.getElementById("newPassword").value.trim();
+         const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-  // Check if the user is logged in
-  const loggedIn = localStorage.getItem("loggedIn");
-  const savedUsername = localStorage.getItem("savedUsername");
-  const biography = localStorage.getItem("biography");
-  const profilePicture = localStorage.getItem("profilePicture");
-  const topBooks = JSON.parse(localStorage.getItem("topBooks")) || [];
+         if (!newUsername || !newPassword || !confirmPassword) {
+            alert("Please fill in all fields.");
+            return;
+         }
 
-  if (profileContent) {
-    if (loggedIn === "true") {
-      // Create profile content dynamically
-      const profileHTML = `
+         if (newPassword !== confirmPassword) {
+            alert("Passwords do not match.");
+            return;
+         }
+
+         if (localStorage.getItem(`user_${newUsername}`)) {
+            alert("Username already exists. Please choose another.");
+            return;
+         }
+
+         const newUser = {
+            password: newPassword,
+            biography: "",
+            profilePicture: "",
+            topBooks: [],
+            activities: [],
+            cart: [],
+            ratings: {}
+         };
+
+         localStorage.setItem(`user_${newUsername}`, JSON.stringify(newUser));
+         localStorage.setItem("loggedInUser", newUsername);
+         alert("Account created successfully! You are now logged in.");
+
+         window.location.href = "profile.html";
+      });
+   }
+
+   // === COLLAPSIBLE LOGIC ===
+   document.querySelectorAll(".collapsible-button").forEach(button => {
+      button.addEventListener("click", function () {
+         const content = this.nextElementSibling;
+         this.classList.toggle("active");
+         content.style.display = content.style.display === "block" ? "none" : "block";
+      });
+   });
+
+   // === PROFILE PAGE LOGIC ===
+   const loggedInUser = localStorage.getItem("loggedInUser");
+   const userData = loggedInUser ? JSON.parse(localStorage.getItem(`user_${loggedInUser}`)) : null;
+
+   if (document.getElementById("profileContent")) {
+      const profileContent = document.getElementById("profileContent");
+
+      if (loggedInUser && userData) {
+         const profileHTML = `
         <div class="profile-header">
-          <img src="${profilePicture || 'default-profile.jpg'}" alt="Profile Picture" id="profile-picture" />
+          <img src="${userData.profilePicture || 'default-profile.jpg'}" alt="Profile Picture" id="profile-picture" />
           <div class="welcome-message">
-            <h2>Welcome, ${savedUsername}!</h2>
-            <p><strong>Biography:</strong> ${biography || "No biography available."}</p>
+            <h2>Welcome, ${loggedInUser}!</h2>
+            <p><strong>Biography:</strong> ${userData.biography || "No biography available."}</p>
           </div>
         </div>
         <h2><strong>Top 4 Books:</strong></h2>
         <div id="book-covers">
-        <section class="gallery">
-          <div class="gallery-container">
-            <div class="gallery-item">
-              <img src="cover1.jpg" alt="Book 1">
-              <div class="overlay">
-                <h3>Book Title 1</h3>
-              </div>
+          <section class="gallery">
+            <div class="gallery-container">
+              ${(userData.topBooks || []).map(book => `
+                <div class="gallery-item">
+                  <img src="${book.cover}" alt="${book.title}">
+                  <div class="overlay"><h3>${book.title}</h3></div>
+                </div>
+              `).join('')}
             </div>
-            <div class="gallery-item">
-              <img src="cover2.jpg" alt="Book 2">
-              <div class="overlay">
-                <h3>Book Title 2</h3>
-              </div>
-            </div>
-            <div class="gallery-item">
-              <img src="cover3.jpg" alt="Book 3">
-              <div class="overlay">
-                <h3>Book Title 3</h3>
-              </div>
-            </div>
-            <div class="gallery-item">
-              <img src="cover4.jpg" alt="Book 4">
-              <div class="overlay">
-                <h3>Book Title 4</h3>
-              </div>
-            </div>
-          </div>
-        </section>
-        </div>        
+          </section>
+        </div>
         <button id="edit-profile-btn">Edit Profile</button>
+        <button id="logoutButton">Log Out</button>
       `;
 
-      // Inject the profile information into the page
-      profileContent.innerHTML = profileHTML;
+         profileContent.innerHTML = profileHTML;
 
-      // Edit profile button logic
-      const editProfileButton = document.getElementById("edit-profile-btn");
-      if (editProfileButton) {
-        editProfileButton.addEventListener("click", function () {
-          window.location.href = "settings.html"; // Redirect to settings.html for profile editing
-        });
+         document.getElementById("edit-profile-btn")?.addEventListener("click", () => {
+            window.location.href = "settings.html";
+         });
+
+         document.getElementById("logoutButton")?.addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser");
+            alert("You have been logged out.");
+            window.location.href = "index.html";
+         });
       }
-    } else {
-      // If not logged in, prompt the user to log in
-      profileContent.innerHTML = `<li>Please log in to see your profile.</li>`;
-    }
-  }
-
-  // === SETTINGS PAGE LOGIC ===
-  const settingsForm = document.getElementById("settingsForm");
-
-  // Profile Picture Upload
-  const uploadButton = document.getElementById("upload-picture");
-  const fileInput = document.getElementById("profile-picture-input");
-  const profilePictureElement = document.getElementById("profile-picture");
-
-  // When the user clicks the "Upload New Profile Picture" button, trigger the file input click event
-  if (uploadButton) {
-    uploadButton.addEventListener("click", function () {
-      fileInput.click();  // This opens the file explorer
-    });
-  }
-
-  // When the user selects a file, update the profile picture preview
-  if (fileInput) {
-    fileInput.addEventListener("change", function () {
-      const file = fileInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          profilePictureElement.src = e.target.result; // Set the new profile picture
-          localStorage.setItem("profilePicture", e.target.result); // Save it to localStorage
-        };
-        reader.readAsDataURL(file); // Read the selected file
+   }
+   if (!loggedInUser || !userData) {
+      if (document.getElementById("profileContent")) {
+         document.getElementById("profileContent").innerHTML = `<p style="text-align:left">Please log in to see your profile.</p>`;
       }
-    });
-  }
 
-  // Save Biography
-  const saveBiographyButton = document.getElementById("save-biography");
-  const biographyTextarea = document.getElementById("biography");
-
-  if (biographyTextarea) {  // Check if the biography textarea exists
-    // Prefill the biography field with the saved biography if available
-    biographyTextarea.value = localStorage.getItem("biography") || "";
-
-    if (saveBiographyButton) {
-      saveBiographyButton.addEventListener("click", function () {
-        const biographyText = biographyTextarea.value.trim();
-        if (biographyText) {
-          localStorage.setItem("biography", biographyText); // Save biography to localStorage
-          alert("Biography saved successfully!");
-        } else {
-          alert("Please enter a biography.");
-        }
-      });
-    }
-  } else {
-    console.log("Biography textarea not found, skipping biography save logic.");
-  }
-
-  // Save Changes Button
-  const saveChangesButton = document.getElementById("save-changes");
-
-  if (saveChangesButton) {
-    saveChangesButton.addEventListener("click", function () {
-      alert("Profile changes saved!");
-      window.location.href = "profile.html"; // Redirect to profile page after saving changes
-    });
-  }
-});
-// Initialize or load cart from localStorage
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-// Save cart to localStorage
-function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// Add to Cart buttons
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.add-to-cart').forEach(button => {
-    button.addEventListener('click', () => {
-      const book = button.closest('.book-item');
-      const title = book.dataset.title;
-      const url = book.dataset.url;
-
-      // Avoid duplicates
-      if (!cart.find(item => item.title === title)) {
-        cart.push({ title, url });
-        saveCart();
-        alert(`${title} added to cart!`);
-      } else {
-        alert(`${title} is already in your cart.`);
+      if (document.getElementById("cartContainer")) {
+         document.getElementById("cartContainer").innerHTML = '<p>Please log in to see your cart.</p>';
       }
-    });
-  });
 
-// Populate cart page with individual checkout buttons
-if (document.querySelector('#cart-content-container')) {
-  const cartContainer = document.createElement('div');
-  cartContainer.classList.add('cart-list');
+      if (document.querySelector(".activity-feed")) {
+         document.querySelector(".activity-feed").innerHTML = '<p>Please log in to see your activity.</p>';
+      }
+   }
 
-  if (cart.length === 0) {
-    cartContainer.innerHTML = '<p>Your cart is empty 🛒</p>';
-  } else {
-    cart.forEach(book => {
-      const item = document.createElement('div');
-      item.classList.add('cart-item');
-      item.innerHTML = `
-        <strong>${book.title}</strong> - 
-       
-        <button class="checkout-button" data-url="${book.url}">Checkout</button>
-      `;
+   // === SETTINGS PAGE LOGIC ===
+   const uploadButton = document.getElementById("upload-picture");
+   const fileInput = document.getElementById("profile-picture-input");
+   const profilePictureElement = document.getElementById("profile-picture");
+   const saveBiographyButton = document.getElementById("save-biography");
+   const biographyTextarea = document.getElementById("biography");
 
-      // Add the individual checkout button functionality
-      const checkoutButton = item.querySelector('.checkout-button');
-      checkoutButton.addEventListener('click', (e) => {
-       const url = e.target.dataset.url;
+   if (loggedInUser && userData) {
+      uploadButton?.addEventListener("click", () => fileInput?.click());
 
-  // Open the book's Amazon page in a new tab
-  window.open(url, '_blank');
-cart = cart.filter(item => item.url !== url);
-  saveCart();
-  updateCartCount();
-
-  // Optionally, remove the item from the DOM
-  e.target.closest('.cart-item').remove();
-if (cart.length === 0) {
-    cartContainer.innerHTML = '<p>Your cart is empty 🛒</p>';
-  }
-	
+      fileInput?.addEventListener("change", function () {
+         const file = fileInput.files[0];
+         if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+               profilePictureElement.src = e.target.result;
+               userData.profilePicture = e.target.result;
+               localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+            };
+            reader.readAsDataURL(file);
+         }
       });
 
-      cartContainer.appendChild(item);
-    });
-  }
+      if (biographyTextarea) {
+         biographyTextarea.value = userData.biography || "";
+         saveBiographyButton?.addEventListener("click", () => {
+            const biographyText = biographyTextarea.value.trim();
+            userData.biography = biographyText;
+            localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+            alert("Biography saved successfully!");
+         });
+      }
 
-  document.querySelector('#cart-content-container').appendChild(cartContainer);
-}
+      document.getElementById("save-changes")?.addEventListener("click", () => {
+         alert("Profile changes saved!");
+         window.location.href = "profile.html";
+      });
 
+      for (let i = 1; i <= 4; i++) {
+         document.getElementById(`save-book-${i}`)?.addEventListener("click", () => {
+            const coverInput = document.getElementById(`book-cover-input-${i}`);
+            const titleInput = document.getElementById(`book-title-input-${i}`);
+            const file = coverInput?.files[0];
+            const title = titleInput?.value.trim();
+
+            if (!file || !title) {
+               alert(`Please provide both a cover image and title for Book ${i}.`);
+               return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+               const bookData = {
+                  title,
+                  cover: e.target.result
+               };
+               userData.topBooks[i - 1] = bookData;
+               localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+               alert(`Book ${i} saved!`);
+            };
+            reader.readAsDataURL(file);
+         });
+      }
+
+      for (let i = 1; i <= 4; i++) {
+         const titleInput = document.getElementById(`book-title-input-${i}`);
+         const coverInput = document.getElementById(`book-cover-input-${i}`);
+
+         if (userData.topBooks[i - 1]) {
+            if (titleInput) titleInput.value = userData.topBooks[i - 1].title || "";
+            if (coverInput && userData.topBooks[i - 1].cover) {
+               const previewImg = document.createElement("img");
+               previewImg.src = userData.topBooks[i - 1].cover;
+               previewImg.alt = "Book Cover Preview";
+               previewImg.style.width = "80px";
+               previewImg.style.marginTop = "5px";
+               coverInput.parentNode.insertBefore(previewImg, coverInput.nextSibling);
+            }
+         }
+      }
+
+      // === CART LOGIC ===
+      const cart = userData.cart || [];
+
+      function saveCart() {
+         userData.cart = cart;
+         localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+      }
+
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+         button.addEventListener('click', () => {
+            const book = button.closest('.book-item');
+            const title = book.dataset.title;
+            const url = book.dataset.url;
+
+            if (!cart.find(item => item.title === title)) {
+               cart.push({
+                  title,
+                  url
+               });
+               saveCart();
+               updateCartCount();
+               alert(`${title} added to cart!`);
+            } else {
+               alert(`${title} is already in your cart.`);
+            }
+
+            addActivity(`You added <em>${title}</em> to your cart.`);
+         });
+      });
+
+      function updateCartCount() {
+         const countSpan = document.getElementById('cart-count');
+         if (countSpan) countSpan.textContent = cart.length;
+      }
+
+      updateCartCount();
+
+      if (document.querySelector('#cart-content-container')) {
+         const cartContainer = document.createElement('div');
+         cartContainer.classList.add('cart-list');
+
+         if (cart.length === 0) {
+            cartContainer.innerHTML = '<p>Cart is empty 🛒</p>';
+         } else {
+            cart.forEach(book => {
+               const item = document.createElement('div');
+               item.classList.add('cart-item');
+               item.innerHTML = `
+            <strong>${book.title}</strong>
+            <button class="checkout-button" data-url="${book.url}">Checkout</button>
+          `;
+               item.querySelector('.checkout-button').addEventListener('click', (e) => {
+                  const url = e.target.dataset.url;
+                  window.open(url, '_blank');
+                  const index = cart.findIndex(item => item.url === url);
+                  if (index > -1) cart.splice(index, 1);
+                  saveCart();
+                  updateCartCount();
+                  e.target.closest('.cart-item').remove();
+                  if (cart.length === 0) {
+                     cartContainer.innerHTML = '<p>Your cart is empty 🛒</p>';
+                  }
+               });
+               cartContainer.appendChild(item);
+            });
+         }
+
+         document.querySelector('#cart-content-container').appendChild(cartContainer);
+      }
+
+      // === ACTIVITY TRACKING ===
+      function addActivity(message) {
+         userData.activities.unshift({
+            message,
+            time: new Date().toLocaleString()
+         });
+         localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+      }
+
+      if (document.querySelector('.activity-feed')) {
+         const activityFeed = document.querySelector(".activity-feed");
+         const activities = userData.activities || [];
+
+         if (activities.length === 0) {
+            activityFeed.innerHTML = `<p>You have no recent activity.</p>`;
+         } else {
+            activityFeed.innerHTML = activities.map(a => `
+          <div class="activity-item">${a.message} <span class="time">${a.time}</span></div>
+        `).join('');
+         }
+      }
+      // === STAR RATING ===
+      document.querySelectorAll('.star-rating').forEach(container => {
+         const title = container.dataset.title;
+         const stars = container.querySelectorAll('.star');
+         const savedRating = userData.ratings[title] || 0;
+
+         highlightStars(stars, savedRating);
+
+         stars.forEach(star => {
+            star.addEventListener('click', () => {
+               const rating = Number(star.dataset.value);
+               userData.ratings[title] = rating;
+               localStorage.setItem(`user_${loggedInUser}`, JSON.stringify(userData));
+               highlightStars(stars, rating);
+               addActivity(`You rated <em>${title}</em> ${rating} 🌠`);
+            });
+
+            star.addEventListener('mouseenter', () => {
+               highlightStars(stars, Number(star.dataset.value));
+            });
+
+            star.addEventListener('mouseleave', () => {
+               highlightStars(stars, userData.ratings[title] || 0);
+            });
+         });
+      });
+
+      function highlightStars(stars, rating) {
+         stars.forEach((s, i) => {
+            s.style.color = i < rating ? 'gold' : 'gray';
+         });
+      }
+   }
 });
-const updateCartCount = () => {
-  const countSpan = document.getElementById('cart-count');
-  if (countSpan) countSpan.textContent = cart.length;
-};
-
-updateCartCount();
-
