@@ -1,51 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The settings page lets users update account information and adjust preferences to manage their experience!">
-  <title>Edit Profile - Bookd</title>
-  <link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Princess+Sofia&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Gorditas&display=swap" rel="stylesheet">
-</head>
-<body>
-  <section id="settings" class="page">
-    <h1>Edit Profile</h1>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="My Settings">
+      <meta name="description" content="The settings page lets users update account information and adjust preferences to manage their experience!">
+      <meta name="keywords" content="books, book reviews, book lovers, online bookshelf, reading tracker, book collection, book rating, favorite books, book recommendations, online library, personal library, profile for readers, book wishlist, cart for books, reading activity, save books, book catalog, digital bookshelf">
+      <title>Edit Profile - Bookd</title>
+      <link rel="stylesheet" href="style.css">
+      <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Princess+Sofia&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Gorditas&display=swap" rel="stylesheet">
+   </head>
+   <body>
+      <section id="settings" class="page">
+         <h1>Edit Profile</h1>
       </section>
-
-    <!-- Navigation Menu -->
-    <nav class="main-nav">
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="browse.html">Browse</a></li>
-        <li><a href="activity.html">Activity</a></li>
-        <li><a href="profile.html">Profile</a></li>
-<li><a href="cart.html">🛍️ (<span id="cart-count">0</span>)</a></li>
-
-      </ul>
-    </nav>
-
-    <!-- Profile Picture Upload -->
-    <div id="profile-picture-container">
-      <img id="profile-picture" src="default-profile.jpg" alt="Profile Picture" /><br>
-      <button id="upload-picture">Upload New Profile Picture</button>
-      <input type="file" id="profile-picture-input" style="display:none;" accept="image/*">
-    </div>
-
-    <!-- Biography Section -->
-    <h3>Biography</h3>
-    <textarea id="biography" placeholder="Tell us about yourself..." rows="5"></textarea><br>
-    <button id="save-biography">Save Biography</button><br><br>
-
-    <!-- Save Changes Button -->
-    <button id="save-changes">Save Changes</button>
-  <footer>
-    <p>&copy; 2025 Azizah Blair | Contact: ablair6@my.westga.edu</p>
-  </footer>
-
-  <!-- Include JavaScript file -->
-  <script src="script.js"></script>
-</body>
+      <!-- Navigation Menu -->
+      <nav class="main-nav">
+         <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="browse.html">Browse</a></li>
+            <li><a href="activity.html">Activity</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="cart.html">🛍️ (<span id="cart-count">0</span>)</a></li>
+         </ul>
+      </nav>
+      <!-- Profile Picture Upload -->
+      <div id="profile-picture-container">
+         <img id="profile-picture" src="default-profile.jpg" alt="Profile Picture" /><br>
+         <button id="upload-picture">Upload New Profile Picture</button>
+         <input type="file" id="profile-picture-input" style="display:none;" accept="image/*">
+      </div>
+      <!-- Biography Section -->
+      <h3>Biography</h3>
+      <textarea id="biography" placeholder="Tell us about yourself..." rows="5"></textarea>
+      <br>
+      <button id="save-biography">Save Biography</button><br><br>
+      <h3>Your Top 4 Books</h3>
+      <div id="top-books">
+         <div id="book-1">
+            <input type="file" id="book-cover-input-1" accept="image/*">
+            <input type="text" id="book-title-input-1" placeholder="Book Title">
+            <button id="save-book-1" style="background-color: #444; color:white">Save Book 1</button>
+         </div>
+         <div id="book-2">
+            <input type="file" id="book-cover-input-2" accept="image/*">
+            <input type="text" id="book-title-input-2" placeholder="Book Title">
+            <button id="save-book-2" style="background-color: #444; color:white">Save Book 2</button>
+         </div>
+         <div id="book-3">
+            <input type="file" id="book-cover-input-3" accept="image/*">
+            <input type="text" id="book-title-input-3" placeholder="Book Title">
+            <button id="save-book-3" style="background-color: #444; color:white">Save Book 3</button>
+         </div>
+         <div id="book-4">
+            <input type="file" id="book-cover-input-4" accept="image/*">
+            <input type="text" id="book-title-input-4" placeholder="Book Title">
+            <button id="save-book-4" style="background-color: #444; color:white">Save Book 4</button>
+         </div>
+      </div>
+      <br><br><br>
+      <!-- Save Changes Button -->
+      <button id="save-changes">Save Changes</button>
+      <footer>
+         <p>&copy; 2025 Azizah Blair | Contact: <a href="mailto:ablair@my.westga.edu">ablair@my.westga.edu</a></p>
+      </footer>
+      <!-- Include JavaScript file -->
+      <script src="script.js"></script>
+   </body>
 </html>
